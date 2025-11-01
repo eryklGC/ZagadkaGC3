@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+body { background:#111; color:#eee; font-family:Arial, sans-serif; text-align:center; padding-top:80px; }
+input { padding:10px; font-size:18px; border-radius:6px; width:110px; text-align:center; }
+button { padding:10px 20px; font-size:18px; border-radius:6px; margin-left:6px; cursor:pointer; }
+#sekret { display:none; margin-top:30px; font-size:20px; }
+#info { margin-top:15px; font-size:16px; color:#bbb; }
+</style>
+</head>
+<body>
+
+<input type="text" id="odp" maxlength="5">
+<button onclick="sprawdz()">OK</button>
+
+<div id="info"></div>
+<div id="sekret"><strong>Współrzędne: N 51° 05.123 E 017° 08.456</strong></div>
+
+<script>
+const tolerancja = 1; // ← ilość minut tolerancji
+
+function pad(n){return n<10?"0"+n:n;}
+
+function sprawdz(){
+const d = new Date();
+const hh = d.getHours();
+const mm = d.getMinutes();
+const wpis = document.getElementById("odp").value.trim();
+const info = document.getElementById("info");
+const sekret = document.getElementById("sekret");
+
+const m = wpis.match(/^(\d{1,2}):(\d{2})$/);
+if(!m){ info.textContent="Błędna odpowiedź."; return; }
+
+const uh = parseInt(m[1],10);
+const um = parseInt(m[2],10);
+
+if(uh<0 || uh>23 || um<0 || um>59){
+info.textContent="Błędna odpowiedź.";
+return;
+}
+
+const akt = hh*60 + mm;
+const usr = uh*60 + um;
+const diff = Math.abs(akt - usr);
+const wrap = Math.min(diff, 1440 - diff); // przełom dnia
+
+if(wrap <= tolerancja){
+sekret.style.display = "block";
+info.textContent = "";
+} else {
+info.textContent = "Błędna odpowiedź.";
+}
+}
+</script>
+
+</body>
+</html>
